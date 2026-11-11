@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>言葉の試着室</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;800&display=swap">
+<style>
+:root{color-scheme:light;--bg:#a9a9a9;--ink:#000;--w:#fff;--g:#52b83a;
+--f:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho",serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;color:var(--ink);font-family:var(--f);overflow:hidden;-webkit-user-select:none;user-select:none;
+background-color:var(--bg);background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.s{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:3.4vmin;padding:4vmin;text-align:center;overflow:auto;justify-content:safe center}
+.s.on{display:flex;animation:fi .8s cubic-bezier(.2,.6,.2,1)}@keyframes fi{from{opacity:0;transform:translateY(2vmin)}}
+.s.out{animation:fo .5s ease-in forwards}@keyframes fo{to{opacity:0}}
+canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0}
+.s>*{position:relative;z-index:1}
+p{font-size:min(3.2vmin,26px);line-height:2;letter-spacing:.08em;max-width:30em}
+small{font-size:min(2.4vmin,20px);letter-spacing:.2em}
+button{font:inherit;font-size:min(3.4vmin,28px);letter-spacing:.3em;color:var(--ink);background:var(--w);border:2px solid var(--ink);border-radius:0;padding:1.6vmin 5vmin;cursor:pointer;touch-action:manipulation}
+button:hover,button:focus-visible{background:var(--ink);color:var(--w);outline:none}
+button.r{background:var(--g)}button.r:hover,button.r:focus-visible{background:var(--ink);color:var(--g)}
+.row{display:flex;gap:3vmin;flex-wrap:wrap;justify-content:center}
+.hl{background:var(--w)}
+.gl{background:var(--g);font-weight:800;padding:1vmin .5vmin;line-height:1.5;letter-spacing:.1em}
+.mk{background:linear-gradient(transparent 62%,var(--g) 62% 88%,transparent 88%)}
+.v{writing-mode:vertical-rl}
+
+/* 表紙 */
+#s0{flex-direction:row;gap:7vmin;cursor:pointer}
+.ti{display:flex;flex-direction:column;align-items:flex-start;gap:1.2vmin}
+.ti span{background:var(--w);font-size:min(12.5vmin,130px);line-height:1.08;padding:0 .06em;font-weight:400}
+.ti span:nth-child(2){margin-left:2.6vmin}.ti span:nth-child(3){margin-left:7vmin}.ti span:nth-child(5){margin-left:6vmin}.ti span:nth-child(6){margin-left:1.6vmin}
+.side{display:flex;flex-direction:column;align-items:flex-start;gap:5vmin;align-self:stretch;justify-content:space-between;padding:1vmin 0}
+.lbls{display:flex;gap:1.6vmin;align-items:flex-start}
+.lbls .gl{font-size:min(4.4vmin,42px)}.lbls .gl:last-child{margin-top:2vmin}
+.side .hl{font-size:min(4vmin,34px);line-height:1.9;letter-spacing:.2em;padding:.4em .1em;align-self:center}
+.side p{font-size:min(2.5vmin,21px);text-align:left;line-height:2}
+@media (max-aspect-ratio:1/1){#s0{gap:3vmin}.side p{display:none}}
+
+/* 物語 */
+.stage{display:flex;flex-direction:column;gap:3vmin;align-items:center;transition:opacity .45s}
+.stage.out{opacity:0}
+.rv{opacity:0;transform:translateY(2vmin);transition:opacity .9s,transform .9s cubic-bezier(.2,.6,.2,1)}
+.rv.show{opacity:1;transform:none}
+.ln{font-size:min(5.2vmin,46px);font-weight:800;letter-spacing:.12em;line-height:1.9;background:var(--w);padding:.1em .45em}
+.ln.sub{font-size:min(3.2vmin,26px);font-weight:400;background:none;padding:0}
+.ln.em{background:var(--g)}
+.lab{font-size:min(2.6vmin,22px);font-weight:800;letter-spacing:.3em;background:var(--g);padding:.5vmin 2vmin}
+.ask{font-size:min(3.4vmin,30px);letter-spacing:.1em;background:var(--w);padding:1.6vmin 2.4vmin;max-width:94vw}
+.ask span{display:inline-block;overflow:hidden;white-space:nowrap;vertical-align:bottom;width:0;border-right:2px solid var(--ink)}
+.ask.show span{animation:ty 2.2s steps(22) .5s forwards,cr .8s step-end 3 2.7s}
+@keyframes ty{to{width:24.2em}}@keyframes cr{50%{border-color:transparent}}
+.ai{display:inline-block;background:var(--g);color:var(--ink);font-weight:800;padding:0 .5em;font-size:min(2.6vmin,22px);align-self:flex-start}
+.ans{text-align:left;background:var(--w);padding:3vmin 4vmin;width:min(94vw,860px);display:flex;flex-direction:column;gap:1.4vmin}
+.ans .hd{font-size:min(5vmin,44px);font-weight:800;letter-spacing:.08em;line-height:1.6}
+.ans .nt{font-size:min(2.6vmin,22px);letter-spacing:.08em}
+.cand{list-style:none;padding:0;margin-top:1vmin;border-top:2px solid var(--ink)}
+.cand li{padding:1.2vmin 0;border-bottom:1px solid #999;font-size:min(2.4vmin,20px);display:flex;gap:2vmin;align-items:baseline;flex-wrap:wrap}
+.cand b{font-size:min(3.2vmin,27px);min-width:7em;letter-spacing:.1em}
+.ans.show li{animation:pop .7s both}.ans.show li:nth-child(1){animation-delay:.6s}.ans.show li:nth-child(2){animation-delay:.9s}.ans.show li:nth-child(3){animation-delay:1.2s}
+@keyframes pop{from{opacity:0;transform:scale(.9)}}
+.rv[data-h]{max-height:20vmin}
+.rv[data-h].gone{max-height:0;opacity:0;margin-top:-3vmin;padding:0;overflow:hidden;transition:all .6s}
+.row2{position:relative;display:flex;align-items:center;justify-content:center;height:16vmin}
+.sp{display:block;width:8vmin;height:8vmin;border-radius:50%;transition:margin .9s cubic-bezier(.6,0,.2,1),transform .9s}
+.sp+.sp{margin-left:2.6vmin}
+.row2.mrg .sp+.sp{margin-left:-7.4vmin}.row2.mrg .sp{transform:scale(1.15)}
+.wd{position:absolute;opacity:0;transition:opacity .6s .6s;font-size:min(6vmin,52px);letter-spacing:.2em;background:var(--w);padding:0 .3em}
+.row2.mrg .wd{opacity:1}
+.dots{position:fixed;left:0;right:0;bottom:7vmin;display:flex;justify-content:center;gap:1.6vmin}
+.dots i{width:1.2vmin;height:1.2vmin;background:var(--w);transition:background .4s,transform .4s}
+.dots i.c{background:var(--g);outline:1px solid var(--ink);transform:scale(1.5)}
+.tap{position:fixed;bottom:11vmin;left:0;right:0;animation:pl 2.2s ease-in-out infinite}
+@keyframes pl{50%{opacity:.3}}
+
+/* 体験 */
+.big{font-size:min(6vmin,52px);font-weight:800;letter-spacing:.14em;line-height:2;background:var(--w);padding:.3em .6em}
+.q{font-size:min(5vmin,44px);font-weight:800;letter-spacing:.14em;line-height:1.9;background:var(--w);padding:.4em .7em}
+.tag{background:var(--w);border:2px solid var(--ink);padding:6vmin 7vmin 5vmin;position:relative;min-width:min(60vmin,520px)}
+.tag b{display:block;font-size:min(3vmin,24px);letter-spacing:.3em;font-weight:400;margin-bottom:1.5vmin;text-align:left}
+.tag .nm{height:1.4em;border-bottom:2px solid var(--ink)}
+#pg{position:fixed;left:0;right:0;bottom:2vmin;display:none;justify-content:center;gap:5vmin;z-index:8;font-size:min(2.2vmin,18px);letter-spacing:.3em}
+#pg.on{display:flex}#pg span.c{font-weight:800;background:var(--g);padding:0 .5em}
+.hint{position:fixed;right:2vmin;bottom:1.6vmin;z-index:9;opacity:.6;font-size:1.8vmin}
+@media (prefers-reduced-motion:reduce){.s.on,.s.out,.tap{animation:none}.rv,.sp{transition:none}}
+</style>
+</head>
+<body>
+
+<canvas id="cv"></canvas>
+
+<section class="s on" id="s0">
+  <div class="ti"><span>言</span><span>葉</span><span>の</span><span>試</span><span>着</span><span>室</span></div>
+  <div class="side">
+    <div class="lbls v-wrap"><b class="gl v">まだ名前のないあれこれに</b><b class="gl v">名前をつけてみる</b></div>
+    <p>音や文章を通して示される、まだ名前のついていない事象。それに鑑賞者が自分なりの名前をつける、参加型の作品。</p>
+    <small>画面にふれてください</small>
+  </div>
+</section>
+
+<section class="s" id="s1">
+  <div class="stage" id="stage"></div>
+  <div class="dots" id="dots"></div>
+  <small class="tap" id="tap">ふれると、つづく</small>
+</section>
+
+<section class="s" id="s2">
+  <p class="q">窓を閉めたあとも、<br>外の雨がかすかに聞こえる。</p>
+  <p>この、名前のない事象に、<br><span class="mk">あなたなりの名前</span>をつけてみてください。</p>
+  <div class="row"><button id="snd">音をつける</button><button class="nx r">つぎへ</button></div>
+</section>
+
+<section class="s" id="s3">
+  <p class="big">卓上の文字を使って、<br>自分なりの言葉を作ってください。</p>
+  <button class="nx r">つぎへ</button>
+</section>
+
+<section class="s" id="s4">
+  <div class="tag"><b>名無し</b><div class="nm"></div></div>
+  <p class="hl" style="padding:.3em .8em">机のスタンプで、紙に名前を押してください。</p>
+  <button id="done" class="r">隣のボードに貼りに行く</button>
+</section>
+
+<nav id="pg"><span>考え</span><span>聞く</span><span>つくる</span><span>貼る</span></nav>
+<div class="hint">長押し2秒：最初に戻る</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let ac=null,node=null,idle,raf,mode=0,drops=[],streaks=[];
+const cv=$('cv'),x=cv.getContext('2d');
+function fit(){cv.width=innerWidth;cv.height=innerHeight}addEventListener('resize',fit);fit();
+function show(n){document.querySelectorAll('.s').forEach(e=>e.classList.remove('on'));$('s'+n).classList.add('on');mode=n;resetIdle();
+ const p=$('pg');p.classList.toggle('on',n>0);[...p.children].forEach((e,i)=>e.classList.toggle('c',i===Math.min(n-1,3)))}
+let busy=0;function go(n,cb){if(busy)return;busy=1;const c=document.querySelector('.s.on');c.classList.add('out');setTimeout(()=>{c.classList.remove('out');show(n);cb&&cb();busy=0},500)}
+/* 音：窓越しにこもった雨 */
+function startSound(){
+ ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume();stopSound();
+ const b=ac.createBuffer(1,ac.sampleRate*3,ac.sampleRate),d=b.getChannelData(0);
+ for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+ const s=ac.createBufferSource();s.buffer=b;s.loop=true;
+ const lp=ac.createBiquadFilter();lp.type="lowpass";lp.frequency.value=700;
+ const g=ac.createGain();g.gain.value=.05;
+ const l=ac.createOscillator();l.frequency.value=.12;const lg=ac.createGain();lg.gain.value=.025;
+ l.connect(lg);lg.connect(g.gain);s.connect(lp);lp.connect(g);g.connect(ac.destination);s.start();l.start();
+ const t=setInterval(()=>{const o=ac.createOscillator(),e=ac.createGain(),n=ac.currentTime;
+  o.frequency.setValueAtTime(500+Math.random()*500,n);o.frequency.exponentialRampToValueAtTime(180,n+.12);
+  e.gain.setValueAtTime(.012,n);e.gain.exponentialRampToValueAtTime(.0001,n+.14);
+  o.connect(e);e.connect(ac.destination);o.start(n);o.stop(n+.15)},650);
+ node={s,l,t};$('snd').textContent="音を止める";
+}
+function stopSound(){if(node){try{node.s.stop();node.l.stop()}catch(e){}clearInterval(node.t);node=null}$('snd').textContent="音をつける"}
+/* 映像：曇った窓をつたう雨と、にじむ波紋（灰色の地に白い筋） */
+for(let i=0;i<60;i++)streaks.push({x:Math.random(),y:Math.random(),v:.0006+Math.random()*.0018,l:.04+Math.random()*.12});
+function loop(t){
+ const W=cv.width,H=cv.height;x.clearRect(0,0,W,H);
+ if(mode===2){
+  streaks.forEach(s=>{s.y+=s.v;if(s.y>1.1){s.y=-.1;s.x=Math.random()}
+   const g=x.createLinearGradient(0,s.y*H,0,(s.y+s.l)*H);g.addColorStop(0,'rgba(255,255,255,0)');g.addColorStop(1,'rgba(255,255,255,.4)');
+   x.strokeStyle=g;x.lineWidth=1.5+s.l*14;x.beginPath();x.moveTo(s.x*W,s.y*H);x.lineTo(s.x*W+s.y*6,(s.y+s.l)*H);x.stroke()});
+  if(Math.random()<.03)drops.push({x:Math.random()*W,y:H*(.55+Math.random()*.4),r:0});
+  drops=drops.filter(d=>d.r<140);
+  drops.forEach(d=>{d.r+=1.1;x.strokeStyle=`rgba(255,255,255,${.5*(1-d.r/140)})`;x.lineWidth=1.4;
+   x.beginPath();x.ellipse(d.x,d.y,d.r,d.r*.28,0,0,7);x.stroke()});
+ }
+ raf=requestAnimationFrame(loop)}
+raf=requestAnimationFrame(loop);
+function resetIdle(){clearTimeout(idle);idle=setTimeout(home,90000)}
+function home(){stopSound();drops=[];show(0)}
+$('s0').onclick=()=>{ac=ac||new (window.AudioContext||window.webkitAudioContext)();ac.resume();go(1,startStory)};
+const CH=[
+ {n:2,h:`<div class="rv ln sub" data-s="0" data-h="1">まだ名前のない感覚をAIに尋ねてみる。</div>
+  <div class="rv lab" data-s="0" data-h="1">名前のない感覚 ↓</div>
+  <div class="rv ask" data-s="0"><span>窓を閉めたあとも、外の雨がかすかに聞こえる。</span></div>
+  <div class="rv ans" data-s="1"><div class="ai">AIの解答</div><div class="hd">近い言葉だと、「雨音の残響」。</div><div class="nt">ただし、音響的な残響とは少し違う現象。</div><ul class="cand"><li><b>遮音後の雨音</b>窓を閉めても残る雨の音</li><li><b>音の余韻</b>閉めたあともかすかに続く音</li><li><b>隔てられた音</b>窓一枚を挟んで聞こえる音</li></ul></div>`},
+ {n:2,h:`<div class="rv ln sub" data-s="0">ひとつひとつ、違うはずの感覚が</div>
+  <div class="rv row2" data-s="0" data-m="1"><i class="sp" style="background:#000"></i><i class="sp" style="background:#fff"></i><i class="sp" style="background:#52b83a"></i><i class="sp" style="background:#555"></i><i class="sp" style="background:#ddd"></i><i class="sp" style="background:#2f7d1f"></i></div>
+  <div class="rv ln" data-s="1"><span class="mk">「これかもしれない」</span>で、<br>ひとつの言葉にまとまっていく。</div>`},
+ {n:2,h:`<div class="rv ln" data-s="0">だから、<br>名前のないものに、<br>人間が名前をつける。</div>
+  <div class="rv ln em" data-s="1">そして、人と人との間で、共有する。</div>`}
+];
+let ci=0,st=0,sb=0;
+$('dots').innerHTML=CH.map(()=>'<i></i>').join('');
+function renderChunk(){
+ const c=CH[ci];$('stage').innerHTML=c.h;
+ [...$('dots').children].forEach((e,k)=>e.classList.toggle('c',k===ci));
+ st=0;reveal();
+}
+function reveal(){const g=$('stage');
+ g.querySelectorAll('[data-s]').forEach(e=>{if(+e.dataset.s<=st)setTimeout(()=>e.classList.add('show'),40)});
+ g.querySelectorAll('[data-m]').forEach(e=>e.classList.toggle('mrg',st>=1));
+ g.querySelectorAll('[data-h]').forEach(e=>e.classList.toggle('gone',st>=1));
+ $('tap').textContent=(st>=CH[ci].n-1&&ci===CH.length-1)?'ふれると、つぎへ':'ふれると、つづく'}
+function startStory(){ci=0;renderChunk()}
+$('s1').onclick=()=>{if(sb||busy)return;resetIdle();
+ if(st<CH[ci].n-1){st++;return reveal()}
+ if(ci<CH.length-1){sb=1;$('stage').classList.add('out');setTimeout(()=>{ci++;$('stage').classList.remove('out');renderChunk();sb=0},500)}
+ else go(2)};
+$('snd').onclick=()=>node?stopSound():startSound();
+document.querySelectorAll('.nx').forEach(b=>b.onclick=()=>{stopSound();go(mode+1)});
+$('done').onclick=()=>go(0);
+let hold;document.addEventListener('pointerdown',()=>{resetIdle();hold=setTimeout(home,2000)});
+['pointerup','pointercancel'].forEach(e=>document.addEventListener(e,()=>clearTimeout(hold)));
+</script>
+</body>
+</html>
